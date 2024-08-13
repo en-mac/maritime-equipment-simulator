@@ -10,7 +10,6 @@ Before you begin, ensure you have the following installed:
 - Docker Compose
 - Kubernetes CLI (kubectl)
 - Minikube or Docker Desktop for Kubernetes support
-- Python (if using Python components)
 - Poetry (for managing Python dependencies)
 
 ## Installation
@@ -40,10 +39,6 @@ Navigate to the `src` directory:
 - For Go components:
   ```bash
   go run ./api/main.go
-  ```
-- For Python components:
-  ```bash
-  poetry run python ./api/app.py
   ```
 
 ### Accessing the Application
