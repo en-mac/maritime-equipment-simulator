@@ -42,24 +42,9 @@ POSTGRES_CONN_STR=
 
 ### Building and Running the Services
 
-1. **Build the Docker images:**
-
-   ```sh
-   docker-compose build
-   ```
-
-2. **Run the Docker containers:**
-
-   ```sh
-   docker-compose --env-file ../.env up
-   ```
-
-### Stopping the Services
-
-To stop the running services, use:
-
 ```sh
 docker-compose down
+docker-compose --env-file ../.env up --build
 ```
 
 ### Querying the Database
@@ -67,10 +52,10 @@ docker-compose down
 You can query the PostgreSQL database to check the sensor data:
 
 ```sh
-docker exec -it $(docker ps -qf "name=deployments-postgres-1") psql -U user -d maritime -c "SELECT * FROM sensor_data;"
+docker exec -it $(docker ps -qf "name=deployments-postgres-1") psql -U user -d maritime -c "SELECT * FROM salinity_data;"
 ```
 
-This command will execute a SQL query inside the PostgreSQL container to retrieve all records from the `sensor_data` table.
+This command will execute a SQL query inside the PostgreSQL container to retrieve all records from the `salinity_data` table.
 
 ## Explanation
 
@@ -81,10 +66,16 @@ This project consists of two main components: the simulator and the processor.
 
 ### Simulator
 
-The simulator generates random sensor data values and assigns an alert level based on the value. If the value is above 90, the alert level is set to "high"; otherwise, it is set to "none". The data is then published to a RabbitMQ queue.
+The simulator generates random salinity values between 30 and 40. Alert levels are set as follows:
+
+* low if the value is below 33.
+* normal if the value is between 33 and 37.
+* high if the value is above 37.
+
+This data is then published to a RabbitMQ queue. Two instances of the simulator run in parallel, each with a different period for generating data.
 
 ### Processor
 
-The processor consumes messages from the RabbitMQ queue, processes the sensor data, and inserts it into the PostgreSQL database. Each record includes the sensor value, alert level, creation timestamp, and the simulator ID that generated the data.
+The processor consumes messages from the RabbitMQ queue, processes the salinity data, and stores it in a PostgreSQL database. Each record includes the salinity value, alert level, creation timestamp, and the simulator ID that generated the data.
 
 This setup allows for simulating a real-time data processing pipeline using Docker containers, RabbitMQ, and PostgreSQL.
