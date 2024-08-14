@@ -51,7 +51,7 @@ POSTGRES_CONN_STR=
 2. **Run the Docker containers:**
 
    ```sh
-   docker-compose up
+   docker-compose --env-file ../.env up
    ```
 
 ### Stopping the Services
