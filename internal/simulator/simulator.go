@@ -10,13 +10,11 @@ import (
 )
 
 func Start() {
-    // Get the RabbitMQ connection string from environment variables
     rabbitMQURL := os.Getenv("RABBITMQ_URL")
     if rabbitMQURL == "" {
         panic("RABBITMQ_URL is not set in environment")
     }
 
-    // Get the Simulator ID from environment variables
     simulatorID := os.Getenv("SIMULATOR_ID")
     if simulatorID == "" {
         panic("SIMULATOR_ID is not set in environment")
@@ -49,9 +47,11 @@ func Start() {
     rand.Seed(time.Now().UnixNano())
 
     for {
-        value := rand.Float64() * 100
-        alertLevel := "none"
-        if value >= 90 {
+        value := 30 + rand.Float64()*10  // Generates a value between 30 and 40
+        alertLevel := "normal"
+        if value < 33 {
+            alertLevel = "low"
+        } else if value > 37 {
             alertLevel = "high"
         }
 
@@ -70,7 +70,7 @@ func Start() {
             panic(fmt.Sprintf("Failed to publish a message: %s", err))
         }
 
-        fmt.Printf("Generated data: %f, Alert Level: %s, Simulator ID: %s\n", value, alertLevel, simulatorID)
+        fmt.Printf("Generated salinity data: %f, Alert Level: %s, Simulator ID: %s\n", value, alertLevel, simulatorID)
         time.Sleep(5 * time.Second)
     }
 }

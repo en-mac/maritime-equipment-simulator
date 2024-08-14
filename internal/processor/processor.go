@@ -18,8 +18,9 @@ func Start() {
     }
     defer db.Close()
 
+    // Create the table if it doesn't exist
     createTableQuery := `
-    CREATE TABLE IF NOT EXISTS sensor_data (
+    CREATE TABLE IF NOT EXISTS salinity_data (
         id SERIAL PRIMARY KEY,
         value FLOAT NOT NULL,
         alert_level VARCHAR(10) NOT NULL,
@@ -77,7 +78,7 @@ func Start() {
             alertLevel := parts[1]
             simulatorID := parts[2]
 
-            insertQuery := "INSERT INTO sensor_data (value, alert_level, simulator_id) VALUES ($1, $2, $3)"
+            insertQuery := "INSERT INTO salinity_data (value, alert_level, simulator_id) VALUES ($1, $2, $3)"
             _, err = db.Exec(insertQuery, value, alertLevel, simulatorID)
             if err != nil {
                 log.Printf("Failed to insert data: %v", err)

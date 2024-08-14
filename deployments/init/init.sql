@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS sensor_data (
+CREATE TABLE IF NOT EXISTS salinity_data (
     id SERIAL PRIMARY KEY,
     value FLOAT NOT NULL,
     alert_level VARCHAR(10) NOT NULL,
