@@ -16,6 +16,12 @@ func Start() {
         panic("RABBITMQ_URL is not set in environment")
     }
 
+    // Get the Simulator ID from environment variables
+    simulatorID := os.Getenv("SIMULATOR_ID")
+    if simulatorID == "" {
+        panic("SIMULATOR_ID is not set in environment")
+    }
+
     conn, err := amqp.Dial(rabbitMQURL)
     if err != nil {
         panic(fmt.Sprintf("Failed to connect to RabbitMQ: %s", err))
@@ -49,7 +55,7 @@ func Start() {
             alertLevel = "high"
         }
 
-        body := fmt.Sprintf("%f:%s", value, alertLevel)
+        body := fmt.Sprintf("%f:%s:%s", value, alertLevel, simulatorID)
         err = ch.Publish(
             "",
             q.Name,
@@ -64,7 +70,7 @@ func Start() {
             panic(fmt.Sprintf("Failed to publish a message: %s", err))
         }
 
-        fmt.Printf("Generated data: %f, Alert Level: %s\n", value, alertLevel)
+        fmt.Printf("Generated data: %f, Alert Level: %s, Simulator ID: %s\n", value, alertLevel, simulatorID)
         time.Sleep(5 * time.Second)
     }
 }

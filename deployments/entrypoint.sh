@@ -24,9 +24,9 @@ retry() {
 
 # Choose command based on input arguments
 if [ "$1" == "/simulator" ]; then
-    retry "/simulator" "${RABBITMQ_HOST}" "${RABBITMQ_PORT}"
+    retry "/simulator" "$RABBITMQ_HOST" "$RABBITMQ_PORT"
 elif [ "$1" == "/processor" ]; then
-    retry "/processor" "${RABBITMQ_HOST}" "${RABBITMQ_PORT}"
+    retry "/processor" "$RABBITMQ_HOST" "$RABBITMQ_PORT"
 else
     exec "$@"
 fi

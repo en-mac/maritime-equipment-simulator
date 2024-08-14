@@ -1,61 +1,29 @@
+Maritime Equipment Simulator
+Description
+This project simulates maritime equipment and processes sensor data. The system consists of simulators generating data and a processor storing this data into a PostgreSQL database.
 
-# Maritime Equipment Simulator
+Setup
+Prerequisites
+Docker
+Docker Compose
+Environment Variables
+Create a .env file in the root of your project.
 
-This project simulates maritime equipment sensor data and processes the data using a Go application.
+Build and Run
+To build and run the Docker containers, execute:
 
-## Prerequisites
+css
+Copy code
+docker-compose up --build
+Stopping the Containers
+To stop the running containers, execute:
 
-- Docker
-- Docker Compose
+Copy code
+docker-compose down
+Check Database Records
+To check the records in the PostgreSQL database, execute:
 
-## Setup
-
-1. Clone the repository:
-
-   ```
-   git clone https://github.com/en-mac/maritime-equipment-simulator.git
-   cd maritime-equipment-simulator
-   ```
-
-2. Create a `.env` file in the `deployments` directory with the following environment variables:
-
-   ```
-   # RabbitMQ Configuration
-   RABBITMQ_HOST=
-   RABBITMQ_PORT=
-   POSTGRES_CONN_STR=
-   RABBITMQ_URL=
-   ```
-
-   Replace the empty values with your configuration.
-
-3. Build and start the services using Docker Compose:
-
-   ```
-   cd deployments
-   docker-compose --env-file .env up --build
-   ```
-
-4. To stop the services, press `CTRL+C` and then run:
-
-   ```
-   docker-compose down
-   ```
-
-## Project Structure
-
-- `cmd/processor/main.go`: Entry point for the processor service.
-- `cmd/simulator/main.go`: Entry point for the simulator service.
-- `internal/processor/processor.go`: Contains the logic for the processor service.
-- `internal/simulator/simulator.go`: Contains the logic for the simulator service.
-- `deployments/`: Contains Docker-related files and configurations.
-  - `Dockerfile`: Dockerfile to build the Go application.
-  - `docker-compose.yml`: Docker Compose configuration.
-  - `entrypoint.sh`: Entrypoint script for the Docker containers.
-  - `init/`: Contains initialization SQL scripts for PostgreSQL.
-- `go.mod` and `go.sum`: Go module dependencies.
-
-## Notes
-
-- Ensure that the `.env` file is not committed to version control by adding it to `.gitignore`.
-- The services will automatically retry connecting to RabbitMQ and PostgreSQL until they are available.
+bash
+Copy code
+docker exec -it $(docker ps -qf "name=postgres") psql -U ${POSTGRES_USER} -d ${POSTGRES_DB} -c "SELECT * FROM sensor_data;"
+This command connects to the PostgreSQL container and executes a SQL query to display all records in the sensor_data table. The docker exec command runs a command inside a running container. The $(docker ps -qf "name=postgres") part retrieves the container ID of the running PostgreSQL container. The psql command connects to the database and executes the given SQL query.

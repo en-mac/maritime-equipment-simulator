@@ -3,25 +3,15 @@ package processor
 import (
     "database/sql"
     "log"
-    "os"
     "strings"
+    "os"
 
     "github.com/streadway/amqp"
     _ "github.com/lib/pq"
 )
 
 func Start() {
-    // Get the connection strings from environment variables
     connStr := os.Getenv("POSTGRES_CONN_STR")
-    if connStr == "" {
-        log.Fatalf("POSTGRES_CONN_STR is not set in environment")
-    }
-
-    rabbitMQURL := os.Getenv("RABBITMQ_URL")
-    if rabbitMQURL == "" {
-        log.Fatalf("RABBITMQ_URL is not set in environment")
-    }
-
     db, err := sql.Open("postgres", connStr)
     if err != nil {
         log.Fatalf("Failed to connect to the database: %v", err)
@@ -33,14 +23,15 @@ func Start() {
         id SERIAL PRIMARY KEY,
         value FLOAT NOT NULL,
         alert_level VARCHAR(10) NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        simulator_id VARCHAR(10) NOT NULL
     );`
     _, err = db.Exec(createTableQuery)
     if err != nil {
         log.Fatalf("Failed to create table: %v", err)
     }
 
-    rabbitMQConn, err := amqp.Dial(rabbitMQURL)
+    rabbitMQConn, err := amqp.Dial(os.Getenv("RABBITMQ_URL"))
     if err != nil {
         log.Fatalf("Failed to connect to RabbitMQ: %v", err)
     }
@@ -84,13 +75,14 @@ func Start() {
             parts := strings.Split(string(d.Body), ":")
             value := parts[0]
             alertLevel := parts[1]
+            simulatorID := parts[2]
 
-            insertQuery := "INSERT INTO sensor_data (value, alert_level) VALUES ($1, $2)"
-            _, err = db.Exec(insertQuery, value, alertLevel)
+            insertQuery := "INSERT INTO sensor_data (value, alert_level, simulator_id) VALUES ($1, $2, $3)"
+            _, err = db.Exec(insertQuery, value, alertLevel, simulatorID)
             if err != nil {
                 log.Printf("Failed to insert data: %v", err)
             } else {
-                log.Printf("Received data: %s, Processed with alert level: %s", value, alertLevel)
+                log.Printf("Received data: %s, Processed with alert level: %s, Simulator ID: %s", value, alertLevel, simulatorID)
             }
         }
     }()

@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-  simulator:
+  simulator1:
     build:
       context: ..
       dockerfile: deployments/Dockerfile
@@ -10,6 +10,25 @@ services:
     environment:
       - RABBITMQ_HOST=${RABBITMQ_HOST}
       - RABBITMQ_PORT=${RABBITMQ_PORT}
+      - RABBITMQ_URL=${RABBITMQ_URL}
+      - SIMULATOR_ID=${SIMULATOR_ID1}
+      - PERIOD=${PERIOD1}
+    networks:
+      - app-network
+
+  simulator2:
+    build:
+      context: ..
+      dockerfile: deployments/Dockerfile
+    entrypoint: ["/entrypoint.sh", "/simulator"]
+    depends_on:
+      - rabbitmq
+    environment:
+      - RABBITMQ_HOST=${RABBITMQ_HOST}
+      - RABBITMQ_PORT=${RABBITMQ_PORT}
+      - RABBITMQ_URL=${RABBITMQ_URL}
+      - SIMULATOR_ID=${SIMULATOR_ID2}
+      - PERIOD=${PERIOD2}
     networks:
       - app-network
 
@@ -24,11 +43,13 @@ services:
     environment:
       - RABBITMQ_HOST=${RABBITMQ_HOST}
       - RABBITMQ_PORT=${RABBITMQ_PORT}
+      - RABBITMQ_URL=${RABBITMQ_URL}
       - POSTGRES_HOST=${POSTGRES_HOST}
       - POSTGRES_PORT=${POSTGRES_PORT}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_CONN_STR=${POSTGRES_CONN_STR}
     networks:
       - app-network
 
