@@ -1,7 +1,7 @@
 
 # Maritime Equipment Simulator
 
-This project simulates maritime equipment sensors and processes the generated data using RabbitMQ and PostgreSQL.
+This is a golang project that simulates maritime equipment sensors and processes the generated data using RabbitMQ and PostgreSQL.
 
 
 ## Setup and Running
@@ -53,14 +53,6 @@ POSTGRES_CONN_STR=
    ```sh
    docker-compose up
    ```
-
-### Accessing the Logs
-
-You can access the logs of the running services using:
-
-```sh
-docker-compose logs -f
-```
 
 ### Stopping the Services
 
