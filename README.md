@@ -1,80 +1,61 @@
 
-# Maritime Equipment Simulator Project Documentation
+# Maritime Equipment Simulator
 
-## Overview
-The Maritime Equipment Simulator is designed to simulate and monitor maritime equipment to enhance operational efficiency and maintenance strategies. This guide covers the setup and execution instructions for local development and deployment.
+This project simulates maritime equipment sensor data and processes the data using a Go application.
 
 ## Prerequisites
-Before you begin, ensure you have the following installed:
+
 - Docker
 - Docker Compose
-- Kubernetes CLI (kubectl)
-- Minikube or Docker Desktop for Kubernetes support
-- Poetry (for managing Python dependencies)
 
-## Installation
+## Setup
 
-### 1. Clone the Repository
-```bash
-git clone https://github.com/yourusername/Maritime-Equipment-Simulator.git
-cd Maritime-Equipment-Simulator
-```
+1. Clone the repository:
 
-### 2. Setup Python Environment (if applicable)
-If your project involves Python components, set up the Python environment using Poetry:
-```bash
-poetry install
-```
+   ```
+   git clone https://github.com/en-mac/maritime-equipment-simulator.git
+   cd maritime-equipment-simulator
+   ```
 
-### 3. Start Local Development Environment
-Use Docker Compose to start your local development environment:
-```bash
-docker-compose up -d
-```
+2. Create a `.env` file in the `deployments` directory with the following environment variables:
 
-## Running the Application
+   ```
+   # RabbitMQ Configuration
+   RABBITMQ_HOST=
+   RABBITMQ_PORT=
+   POSTGRES_CONN_STR=
+   RABBITMQ_URL=
+   ```
 
-### Local API and Simulator
-Navigate to the `src` directory:
-- For Go components:
-  ```bash
-  go run ./api/main.go
-  ```
+   Replace the empty values with your configuration.
 
-### Accessing the Application
-The API will be available at `http://localhost:8080`. Use API endpoints to interact with the simulator, e.g., start/stop simulation or fetch data.
+3. Build and start the services using Docker Compose:
 
-### Using Docker
-Build the Docker image and run the container:
-```bash
-docker build -t maritime-equipment-simulator .
-docker run -p 8080:8080 maritime-equipment-simulator
-```
+   ```
+   cd deployments
+   docker-compose --env-file .env up --build
+   ```
 
-## Deploying to Kubernetes
+4. To stop the services, press `CTRL+C` and then run:
 
-### Start Minikube or Set up Kubernetes Cluster
-```bash
-minikube start
-```
+   ```
+   docker-compose down
+   ```
 
-### Deploy to Kubernetes
-Apply the Kubernetes configurations:
-```bash
-kubectl apply -f deployments/kubernetes.yaml
-```
+## Project Structure
 
-### Verify Deployment
-Check the status of your Kubernetes pods:
-```bash
-kubectl get pods
-```
+- `cmd/processor/main.go`: Entry point for the processor service.
+- `cmd/simulator/main.go`: Entry point for the simulator service.
+- `internal/processor/processor.go`: Contains the logic for the processor service.
+- `internal/simulator/simulator.go`: Contains the logic for the simulator service.
+- `deployments/`: Contains Docker-related files and configurations.
+  - `Dockerfile`: Dockerfile to build the Go application.
+  - `docker-compose.yml`: Docker Compose configuration.
+  - `entrypoint.sh`: Entrypoint script for the Docker containers.
+  - `init/`: Contains initialization SQL scripts for PostgreSQL.
+- `go.mod` and `go.sum`: Go module dependencies.
 
-## Accessing the System
-After deployment, access the system via the Kubernetes load balancer or node port, depending on your configuration.
+## Notes
 
-## Documentation and Support
-Refer to the `/docs` directory for more detailed documentation on API usage, architecture, and other operational guides.
-
-## Troubleshooting
-If you encounter any issues during setup or deployment, ensure all prerequisites are correctly installed and configured. Check the Docker and Kubernetes logs for specific error messages.
+- Ensure that the `.env` file is not committed to version control by adding it to `.gitignore`.
+- The services will automatically retry connecting to RabbitMQ and PostgreSQL until they are available.
