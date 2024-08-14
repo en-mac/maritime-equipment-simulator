@@ -1,29 +1,98 @@
-Maritime Equipment Simulator
-Description
-This project simulates maritime equipment and processes sensor data. The system consists of simulators generating data and a processor storing this data into a PostgreSQL database.
 
-Setup
-Prerequisites
-Docker
-Docker Compose
-Environment Variables
-Create a .env file in the root of your project.
+# Maritime Equipment Simulator
 
-Build and Run
-To build and run the Docker containers, execute:
+This project simulates maritime equipment sensors and processes the generated data using RabbitMQ and PostgreSQL.
 
-css
-Copy code
-docker-compose up --build
-Stopping the Containers
-To stop the running containers, execute:
 
-Copy code
+## Setup and Running
+
+### Prerequisites
+
+- Docker
+- Docker Compose
+
+### Configuration
+
+Create a `.env` file in the root directory with the following variables:
+
+```
+# RabbitMQ Configuration
+RABBITMQ_HOST=
+RABBITMQ_PORT=
+RABBITMQ_URL=
+
+# PostgreSQL Configuration
+POSTGRES_HOST=
+POSTGRES_PORT=
+POSTGRES_USER=
+POSTGRES_PASSWORD=
+POSTGRES_DB=
+
+# Simulator Periods
+PERIOD1=
+PERIOD2=
+
+# Simulator IDs
+SIMULATOR_ID1=
+SIMULATOR_ID2=
+
+# PostgreSQL Connection String
+POSTGRES_CONN_STR=
+```
+
+### Building and Running the Services
+
+1. **Build the Docker images:**
+
+   ```sh
+   docker-compose build
+   ```
+
+2. **Run the Docker containers:**
+
+   ```sh
+   docker-compose up
+   ```
+
+### Accessing the Logs
+
+You can access the logs of the running services using:
+
+```sh
+docker-compose logs -f
+```
+
+### Stopping the Services
+
+To stop the running services, use:
+
+```sh
 docker-compose down
-Check Database Records
-To check the records in the PostgreSQL database, execute:
+```
 
-bash
-Copy code
-docker exec -it $(docker ps -qf "name=postgres") psql -U ${POSTGRES_USER} -d ${POSTGRES_DB} -c "SELECT * FROM sensor_data;"
-This command connects to the PostgreSQL container and executes a SQL query to display all records in the sensor_data table. The docker exec command runs a command inside a running container. The $(docker ps -qf "name=postgres") part retrieves the container ID of the running PostgreSQL container. The psql command connects to the database and executes the given SQL query.
+### Querying the Database
+
+You can query the PostgreSQL database to check the sensor data:
+
+```sh
+docker exec -it $(docker ps -qf "name=deployments-postgres-1") psql -U user -d maritime -c "SELECT * FROM sensor_data;"
+```
+
+This command will execute a SQL query inside the PostgreSQL container to retrieve all records from the `sensor_data` table.
+
+## Explanation
+
+This project consists of two main components: the simulator and the processor.
+
+- **Simulator:** Generates random sensor data and sends it to RabbitMQ. Two instances of the simulator run in parallel, each with a different period for generating data.
+- **Processor:** Consumes the sensor data from RabbitMQ, processes it, and stores it in a PostgreSQL database.
+
+### Simulator
+
+The simulator generates random sensor data values and assigns an alert level based on the value. If the value is above 90, the alert level is set to "high"; otherwise, it is set to "none". The data is then published to a RabbitMQ queue.
+
+### Processor
+
+The processor consumes messages from the RabbitMQ queue, processes the sensor data, and inserts it into the PostgreSQL database. Each record includes the sensor value, alert level, creation timestamp, and the simulator ID that generated the data.
+
+This setup allows for simulating a real-time data processing pipeline using Docker containers, RabbitMQ, and PostgreSQL.
