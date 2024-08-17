@@ -1,4 +1,7 @@
 
+
+# TODO - Parameterize quantity of simulators. Each simulator should have its own period, id, and IP address. The simulator should be able to generate data for multiple sensors.
+
 # Maritime Equipment Simulator
 
 This is a golang project that simulates maritime equipment sensors and processes the generated data using RabbitMQ and PostgreSQL.
