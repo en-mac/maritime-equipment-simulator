@@ -1,0 +1,54 @@
+# Global settings
+global:
+  namespace: default
+
+# Simulator settings
+simulator:
+  image: "your-ecr-repository/simulator:latest"
+  replicas: 2
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+# Processor settings
+processor:
+  image: "your-ecr-repository/processor:latest"
+  replicas: 1
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+# RabbitMQ settings
+rabbitmq:
+  image: "rabbitmq:3-management"
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  username: rabbituser
+  password: rabbitpass
+
+# PostgreSQL settings
+postgresql:
+  image: "postgres:13"
+  resources:
+    limits:
+      cpu: 100m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+  database: mydb
+  username: myuser
+  password: mypassword

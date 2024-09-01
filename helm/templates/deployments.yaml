@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "maritime-equipment-simulator.fullname" . }}-simulator
+  labels:
+    app: {{ include "maritime-equipment-simulator.name" . }}
+    component: simulator
+spec:
+  replicas: {{ .Values.simulator.replicas }}
+  selector:
+    matchLabels:
+      app: {{ include "maritime-equipment-simulator.name" . }}
+      component: simulator
+  template:
+    metadata:
+      labels:
+        app: {{ include "maritime-equipment-simulator.name" . }}
+        component: simulator
+    spec:
+      containers:
+        - name: simulator
+          image: {{ .Values.simulator.image }}
+          resources:
+            limits:
+              cpu: {{ .Values.simulator.resources.limits.cpu }}
+              memory: {{ .Values.simulator.resources.limits.memory }}
+            requests:
+              cpu: {{ .Values.simulator.resources.requests.cpu }}
+              memory: {{ .Values.simulator.resources.requests.memory }}
+          env:
+            - name: RABBITMQ_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "maritime-equipment-simulator.fullname" . }}-secrets
+                  key: rabbitmq-url
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "maritime-equipment-simulator.fullname" . }}-processor
+  labels:
+    app: {{ include "maritime-equipment-simulator.name" . }}
+    component: processor
+spec:
+  replicas: {{ .Values.processor.replicas }}
+  selector:
+    matchLabels:
+      app: {{ include "maritime-equipment-simulator.name" . }}
+      component: processor
+  template:
+    metadata:
+      labels:
+        app: {{ include "maritime-equipment-simulator.name" . }}
+        component: processor
+    spec:
+      containers:
+        - name: processor
+          image: {{ .Values.processor.image }}
+          resources:
+            limits:
+              cpu: {{ .Values.processor.resources.limits.cpu }}
+              memory: {{ .Values.processor.resources.limits.memory }}
+            requests:
+              cpu: {{ .Values.processor.resources.requests.cpu }}
+              memory: {{ .Values.processor.resources.requests.memory }}
+          env:
+            - name: POSTGRES_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "maritime-equipment-simulator.fullname" . }}-secrets
+                  key: postgres-url

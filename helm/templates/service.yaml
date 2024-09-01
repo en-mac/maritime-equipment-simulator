@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "maritime-equipment-simulator.fullname" . }}-rabbitmq
+  labels:
+    app: {{ include "maritime-equipment-simulator.name" . }}
+    component: rabbitmq
+spec:
+  ports:
+    - port: 5672
+      targetPort: 5672
+    - port: 15672
+      targetPort: 15672
+  selector:
+    app: {{ include "maritime-equipment-simulator.name" . }}
+    component: rabbitmq
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "maritime-equipment-simulator.fullname" . }}-postgresql
+  labels:
+    app: {{ include "maritime-equipment-simulator.name" . }}
+    component: postgresql
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: {{ include "maritime-equipment-simulator.name" . }}
+    component: postgresql
